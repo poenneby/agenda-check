@@ -24,4 +24,11 @@ class EventTest < ActiveSupport::TestCase
     assert_equal ["12:00", "12:30", "13:00", "13:30"], availabilities[0][:slots]
   end
 
+  test "only appointments" do
+    Event.create kind: 'appointment', starts_at: DateTime.parse("2014-08-04 12:00"), ends_at: DateTime.parse("2014-08-04 14:00")
+
+    availabilities = Event.availabilities DateTime.parse("2014-08-04")
+    assert_equal Date.new(2014, 8, 4), availabilities[0][:date]
+    assert_equal [], availabilities[0][:slots]
+  end
 end
