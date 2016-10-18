@@ -39,7 +39,7 @@ class Event < ApplicationRecord
         |day| day[:slotDate] === date
       }.first
 
-      availableSlotDates = (openSlotsDay || appointmentSlotsDay) ? openSlotsDay[:slots].reject{|slot| appointmentSlotsDay[:slots].include? slot} : []
+      availableSlotDates = (appointmentSlotsDay) ? openSlotsDay[:slots].reject{|slot| appointmentSlotsDay[:slots].include? slot} : (openSlotsDay ? openSlotsDay[:slots] : [])
 
       {
         date: date,
