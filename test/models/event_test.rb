@@ -31,4 +31,18 @@ class EventTest < ActiveSupport::TestCase
     assert_equal Date.new(2014, 8, 4), availabilities[0][:date]
     assert_equal [], availabilities[0][:slots]
   end
+
+  test "two weeks later" do
+    Event.create kind: 'opening', starts_at: DateTime.parse('2014-08-04 09:30'), ends_at: DateTime.parse('2014-08-04 12:30'), weekly_recurring: true
+
+    availabilities = Event.availabilities DateTime.parse("2014-08-18")
+    assert_equal ['9:30', '10:00', '10:30', '11:00', '11:30', '12:00'], availabilities[0][:slots]
+  end
+
+  test "five weeks later" do
+    Event.create kind: 'opening', starts_at: DateTime.parse('2014-08-04 09:30'), ends_at: DateTime.parse('2014-08-04 12:30'), weekly_recurring: true
+
+    availabilities = Event.availabilities DateTime.parse("2014-09-08")
+    assert_equal ['9:30', '10:00', '10:30', '11:00', '11:30', '12:00'], availabilities[0][:slots]
+  end
 end
