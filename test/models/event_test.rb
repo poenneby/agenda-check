@@ -45,4 +45,18 @@ class EventTest < ActiveSupport::TestCase
     availabilities = Event.availabilities DateTime.parse("2014-09-08")
     assert_equal ['9:30', '10:00', '10:30', '11:00', '11:30', '12:00'], availabilities[0][:slots]
   end
+
+  test "recurring years ago" do
+    Event.create kind: 'opening', starts_at: DateTime.parse('2014-08-04 09:30'),
+                       ends_at: DateTime.parse('2014-08-04 12:30'), weekly_recurring: true
+    Event.create kind: 'appointment', starts_at: DateTime.parse('2014-08-09 11:00'),
+                       ends_at: DateTime.parse('2014-08-09 11:30')
+    Event.create kind: 'appointment', starts_at: DateTime.parse('2014-08-11 10:30'),
+                       ends_at: DateTime.parse('2014-08-11 11:30')
+    Event.create kind: 'opening', starts_at: DateTime.parse('2012-08-14 09:30'),
+                       ends_at: DateTime.parse('2012-08-14 12:30'), weekly_recurring: true
+    availabilities = Event.availabilities DateTime.parse('2014-08-18')
+
+    assert_equal ['9:30', '10:00', '10:30', '11:00', '11:30', '12:00'], availabilities[1][:slots]
+  end
 end

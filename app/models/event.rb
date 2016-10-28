@@ -3,7 +3,9 @@ class Event < ApplicationRecord
     openings = Event.where('kind = "opening"')
     recurringOpenings = openings + openings.reduce([]) {
       |acc, event|
-      (event.weekly_recurring === true) ? acc + recurring_events([event]) : acc
+      days = (in_date - DateTime.parse(event.starts_at.strftime("%Y-%m-%d"))).to_i
+      weeks = (days > 7 ? days / 7 : days) + 2
+      (event.weekly_recurring === true) ? acc + recurring_events([event], weeks) : acc
     }
 
     openingSlotsPerDay = recurringOpenings.map {
@@ -43,14 +45,15 @@ class Event < ApplicationRecord
   end
 
   private
-  def self.recurring_events(in_events)
-    return in_events if in_events.length === 52 # weeks
+  def self.recurring_events(in_events, weeks)
+    return in_events if in_events.length == weeks
     return recurring_events(in_events +
       [Event.new do |e|
         e.kind = in_events.last.kind
         e.starts_at = in_events.last.starts_at + 7.days
         e.ends_at = in_events.last.ends_at + 7.days
-      end]
+      end],
+      weeks
     )
   end
 end
